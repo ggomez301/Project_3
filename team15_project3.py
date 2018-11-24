@@ -387,11 +387,20 @@ class PostALU:
 class MemUnit:
 
 class WBUnit:
+    def __init__(self, instrs, opcode, mem, valids, address, arg1, arg2, arg3,
+                 instcount, dest, src1, src2):
+        self.instructions = instrs
+        self.opcode = opcode
+        self.memory = mem
+        self.address = address
+        self. 
+
 
 class Cache:
 
 class printState:
-    def __init__(self, ):
+    def __init__(self, instructions, opcode, mem, valids, address, arg1, arg2, arg3,
+                 instcount, dest, src1, src2):
 
 
 def main:
