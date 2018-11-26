@@ -57,7 +57,7 @@ class Dissassemble:
         instructions = [line.rstrip() for line in
                             open(inputFileName, 'rb')]
 
-        address[0] = 96
+        address.append(96)
 
         for i in range(len(instructions)):
             line = instructions[i]
@@ -453,42 +453,7 @@ class Issue:
         self.inst0 = 0
         self.inst1 = 0
 
-class PreMEM:
-    def __init__(self, instrs, opcode, mem, valids, address, arg1, arg2, arg3,
-                 instcount, dest, src1, src2, cycle, PC):
-        self.instructions = instrs
-        self.opcode = opcode
-        self.memory = mem
-        self.address = address
-        self.arg1 = arg1
-        self.arg2 = arg2
-        self.arg3 = arg3
-        self.instcount = instcount
-        self.dest = dest
-        self.src1 = src1
-        self.src2 = src2
-        self.cycle = cycle
-        self.PC = PC
-        self.entry0 = 0
-        self.entry1 = 0
-
-class PreALU:
-    def __init__(self, instrs, opcode, mem, valids, address, arg1, arg2, arg3,
-                 instcount, dest, src1, src2, cycle, PC):
-        self.instructions = instrs
-        self.opcode = opcode
-        self.memory = mem
-        self.address = address
-        self.arg1 = arg1
-        self.arg2 = arg2
-        self.arg3 = arg3
-        self.instcount = instcount
-        self.dest = dest
-        self.src1 = src1
-        self.src2 = src2
-        self.cycle = cycle
-        self.PC = PC
-        self.entry0 = 0
+    def run(self):
 
 class ALU:
     def __init__(self, instrs, opcode, mem, valids, address, arg1, arg2, arg3,
@@ -506,7 +471,12 @@ class ALU:
         self.src2 = src2
         self.cycle = cycle
         self.PC = PC
+        self.preALUBuff = [-1, -1]
+        self.postALUBuff = [-1, -1]
 
+
+
+    def run(self):
 
 class MemUnit:
     def __init__(self, instrs, opcode, mem, valids, address, arg1, arg2, arg3,
@@ -524,49 +494,18 @@ class MemUnit:
         self.src2 = src2
         self.cycle = cycle
         self.PC = PC
+        self.preMemBuff = [-1, -1]
+        self.postMemBuff = [-1, -1]
 
-class PostMEM:
-    def __init__(self, instrs, opcode, mem, valids, address, arg1, arg2, arg3,
-                 instcount, dest, src1, src2, cycle, PC):
-        self.instructions = instrs
-        self.opcode = opcode
-        self.memory = mem
-        self.address = address
-        self.arg1 = arg1
-        self.arg2 = arg2
-        self.arg3 = arg3
-        self.instcount = instcount
-        self.dest = dest
-        self.src1 = src1
-        self.src2 = src2
-        self.cycle = cycle
-        self.PC = PC
-        self.entry0 = 0
-
-class PostALU:
-    def __init__(self, instrs, opcode, mem, valids, address, arg1, arg2, arg3,
-                 instcount, dest, src1, src2, cycle, PC):
-        self.instructions = instrs
-        self.opcode = opcode
-        self.memory = mem
-        self.address = address
-        self.arg1 = arg1
-        self.arg2 = arg2
-        self.arg3 = arg3
-        self.instcount = instcount
-        self.dest = dest
-        self.src1 = src1
-        self.src2 = src2
-        self.cycle = cycle
-        self.PC = PC
-        self.entry0 = 0
-
+    def run(self):
 
 class WBUnit:
-    def __init__(self, instrs, opcode, mem, valids, address, arg1, arg2, arg3,
-                 instcount, dest, src1, src2, PC):
+    def __init__(self, instrs, reglist, opcode, opname, mem, valids, address,
+                 arg1, arg2, arg3, instcount, dest, src1, src2, PC):
         self.instructions = instrs
-        self.opcode = opcode
+        self.reglist = reglist
+        self.opcode = opcode3
+        self.opname = opname
         self.memory = mem
         self.address = address
         self.arg1 = arg1
@@ -577,6 +516,20 @@ class WBUnit:
         self.src1 = src1
         self.src2 = src2
         self.PC = PC
+
+    def run(self):
+        pALU = ALU()
+        pMEM = MemUnit()
+
+        if pMEM.postMemBuff[1] != -1:
+            self.reglist.insert(pMEM.postMemBuff[1], pMEM.postMemBuff[0])
+        if pALU.postALUBuff[1] != -1:
+            self.reglist.insert(pALU.postALUBuff[1], pALU.postALUBuff[0])
+
+        pMEM.postMemBuff.insert(0, -1)
+        pMEM.postMemBuff.insert(1, -1)
+        pALU.postALUBuff.insert(0, -1)
+        pALU.postALUBuff.insert(1, -1)
 
 class Cache:
     def __init__(self, instrs, opcode, mem, valids, address, arg1, arg2, arg3,
@@ -594,7 +547,7 @@ class Cache:
         self.src2 = src2
         self.PC = PC
 
-class control:
+class Control:
     def __init__(self, instrs, opcode, mem, valids, address, arg1, arg2, arg3,
                  instcount, dest, src1, src2, PC):
         self.instructions = instrs
@@ -626,6 +579,10 @@ class printState:
         self.src2 = src2
         self.PC = PC
 
+    def run(self):
+        for i in range(len(self.instructions)):
+
+
 
 def main:
 
@@ -633,3 +590,5 @@ dis = dissassemble()
 dis.run
 con = control()
 con.run
+pState = printState()
+pState.run
