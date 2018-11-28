@@ -122,43 +122,49 @@ MOVZ/MOVK
  45             currInst +=1
 
 AND/ORR/EOR
-492         #Checks for STUR
-  1         #elif lineStr[0:8] + lineStr[9:12]  == instructDic["STUR"]:
-  2         elif argStr=='STUR':
-  3             cycleCnt += 1
-  4             prgCnt = str(getPrgCnt(lineStr))
-  5 
-  6             #list of regArg regInput and immediate value
-  7             #all are string integers which need to be converted to int values
-  8             binRt = lineStr[32:37]
-  9             binRn = lineStr[26:30] + lineStr[31]
- 10             Rt = int(binRt, 2)
- 11             Rn = int(binRn, 2)
- 12             pndHit = 0
- 13             strImmVal = ''
- 14             for chr in lineStr:
- 15                 if chr == '\n' or chr == ']':
- 16                     pndHit = 0
- 17                 if pndHit == 1:
- 18                     strImmVal += chr
- 19                 if chr == '#':
- 20                     pndHit = 1
- 21 
- 22             #adds strImmVal to dataList and fills list with 0s
- 23             dataListPos = int(strImmVal) * 4 + reg[Rn]
- 24             dataListPos = dataListPos - (int(argCnt)*4+96)
- 25             dataListPos = dataListPos / 4
- 26             dataListAppend = 8 - (dataListPos % 7)
- 27             dataListAppend += dataListPos
- 28             stretchDataList(dataListAppend)
- 29             dataList[dataListPos] = reg[int(Rt)]
- 30 
- 31             #starts display
- 32             Dis = VDisplay()
- 33             inptStr = "#" + strImmVal
- 34             Dis.printInfoImm(wf, 'STUR', Rd, Rn, strImmVal)
- 35             Dis.printReg(wf)
- 36             Dis.printData(wf)
- 37 
- 38             currInst += 1
+636         elif argStr=='AND' or argStr=='ORR' or argStr=='EOR':
+  1             cycleCnt += 1
+  2             prgCnt = str(getPrgCnt(lineStr))
+  3             #Grabbing Rd Rn Rm
+  4             binRd = lineStr[32:37]
+  5             binRn = lineStr[26:30] + lineStr[31]
+  6             binRm = lineStr[13:18]
+  7             Rd = int(binRd, 2)
+  8             Rn = int(binRn, 2)
+  9             Rm = int(binRm, 2)
+ 10 
+ 11             RnVal = reg[int(binRn, 2)]
+ 12             RmVal = reg[int(binRm, 2)]
+ 13             binRnVal = '{0:064b}'.format(RnVal)
+ 14             binRmVal = '{0:064b}'.format(RmVal)
+ 15             count = 0
+ 16             newBinStr = ''
+ 17             if argStr=='AND':
+ 18                 while count != 64:
+ 19                     if binRnVal[count] == '1' and binRmVal[count] == '1':
+ 20                         newBinStr+='1'
+ 21                     else:
+ 22                         newBinStr+='0'
+ 23                     count+=1
+ 24             elif argStr=='EOR':
+ 25                 while count != 64:
+ 26                     if int(binRnVal[count])+int(binRmVal[count])==1:
+ 27                         newBinStr+='1'
+ 28                     else:
+ 29                         newBinStr+='0'
+ 30                     count+=1
+ 31             else:
+ 32                 while count != 64:
+ 33                     if binRnVal[count] == '0' and binRmVal[count] == '0':
+ 34                         newBinStr+='0'
+ 35                     else:
+ 36                         newBinStr+='1'
+ 37                     count+=1
+ 38             newRd = int(newBinStr, 2)
+ 39             reg[int(binRd, 2)] = newRd
+ 40             #starts display
+ 41             Dis = VDisplay()
+ 42             inptStr = "#" + strImmVal
+
+
 
