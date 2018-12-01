@@ -186,5 +186,9 @@ AND/ORR/EOR
  41             Dis = VDisplay()
  42             inptStr = "#" + strImmVal
 
-
+LSR
+  4             elif argStr=='LSR': 
+  3                 newRdBin = binRnVal[0:(64-int(strImmVal))] 
+  2                 newerRdBin = int(strImmVal)*'0'+newRdBin 
+  1                 newRd = int(newerRdBin, 2)  
 
